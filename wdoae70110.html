@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- แก้ไข viewport เพื่อบังคับให้แสดงผลแบบ Desktop (ไม่จัดเรียงใหม่บนมือถือ) -->
+    <meta name="viewport" content="width=1200">
+    <title>สำนักงานส่งเสริมและพัฒนาการเกษตรที่ 2 จังหวัดราชบุรี</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <style>
+    :root { --bs-font-sans-serif: 'Sarabun', sans-serif; }
+    /* เพิ่ม min-width เพื่อล็อคโครงสร้างให้กว้างเท่าคอมพิวเตอร์เสมอ */
+    body { background-color: #f8fafc; font-family: 'Sarabun', sans-serif; color: #1e293b; min-height: 100vh; min-width: 1200px; overflow-x: auto; }
+    
+    /* ================== UI STYLES (สำหรับหน้าจอกรอกข้อมูล) ================== */
+    /* สีแถบบาร์ด้านบนเป็นโทนสีเขียวเข้มของกรมส่งเสริมการเกษตร */
+    .public-navbar { background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); padding: 0.8rem 1rem; }
+    .calc-card { background: rgba(255, 255, 255, 0.98); border-radius: 16px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; }
+    
+    /* สีหัวข้อหลัก (Section 1) เป็นโทนสีเขียวธรรมชาติ */
+    .calc-header { background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%); color: white; border-radius: 16px 16px 0 0; padding: 1.5rem; }
+    
+    .section-badge { background: rgba(255, 255, 255, 0.2); color: #fff; padding: 0.35rem 0.8rem; border-radius: 50rem; font-size: 0.85rem; font-weight: 600; }
+    .rate-highlight-card { background: linear-gradient(135deg, #f6f8fb 0%, #f1f5f9 100%); border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; }
+    .summary-card { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: #f8fafc; border-radius: 16px; padding: 1.8rem; position: relative; overflow: hidden; }
+    .total-amount-display { font-size: 2.5rem; font-weight: 800; color: #38bdf8; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3); }
+    .thai-baht-text { font-size: 1.1rem; color: #94a3b8; font-weight: 500; }
+    .table-dynamic th { background-color: #f8fafc; color: #334155; font-weight: 600; }
+    .print-btn-container { border-left: 2px dashed rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
+    .btn-print-huge { font-size: 1.3rem; padding: 1.2rem 2rem; border-radius: 15px; font-weight: 600; transition: all 0.3s; background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); width: 100%; }
+    .btn-print-huge:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6); color: white; }
+    
+    #print-section { display: none; }
+
+    /* ================== PRINT STYLES (แบบฟอร์มเอกสาร 8708) ================== */
+    @media print {
+        @page { size: A4 portrait; margin: 15mm 20mm; } 
+        @page landscape_page { size: A4 landscape; margin: 15mm 15mm; }
+        
+        body { background: white; margin: 0; padding: 0; color: black; font-family: 'Sarabun', serif; font-size: 11pt; line-height: 1.5; -webkit-print-color-adjust: exact; print-color-adjust: exact; min-width: auto !important; }
+        
+        #ui-section { display: none !important; }
+        #print-section { display: block !important; }
+        
+        .page-break { page-break-after: always; width: 100%; clear: both; }
+        .page-break:last-child { page-break-after: auto; }
+        
+        /* สั่งให้หน้าใดที่มี class นี้ กลายเป็นแนวนอน */
+        .page-landscape { page: landscape_page; }
+        
+        /* สไตล์สำหรับข้อมูลที่กรอกลงไป (สีน้ำเงินเข้ม) */
+        .val { color: #0000cd; display: inline-block; padding: 0 4px; border-bottom: 1px dotted #000; text-align: center; font-weight: 500; line-height: 1.2; min-width: 30px; font-size: 11pt; }
+        .val-left { color: #0000cd; display: inline-block; padding-left: 5px; border-bottom: 1px dotted #000; text-align: left; font-weight: 500; line-height: 1.2; min-width: 30px; font-size: 11pt; }
+        
+        /* สไตล์โครงสร้างบรรทัด */
+        .f-row { display: flex; margin-bottom: 5px; align-items: flex-end; }
+        .indent { padding-left: 2.5cm; }
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        .fw-bold { font-weight: bold; }
+        
+        .chk { font-size: 11pt; line-height: 1; vertical-align: middle; margin-right: 3px; }
+
+        /* ตารางส่วนที่ 2 */
+        .t-table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-top: 15px; }
+        .t-table th, .t-table td { border: 1px solid black; padding: 4px; text-align: center; vertical-align: middle; }
+        .t-table th { background-color: #f0f0f0 !important; font-weight: normal; }
+    }
+    </style>
+</head>
+<body>
+    <div id="ui-section">
+        <nav class="navbar navbar-expand-lg navbar-dark public-navbar mb-4 no-print">
+            <div class="container">
+                <a class="navbar-brand fw-bold d-flex align-items-center" href="#">
+                    <i class="fas fa-file-invoice-dollar fs-4 me-2 text-warning"></i>
+                    <span>โปรแกรมคำนวณและพิมพ์ใบเบิกค่าใช้จ่ายในการเดินทางไปราชการ (แบบ 8708)</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="container pb-5">
+            <div class="row mb-4 align-items-center no-print">
+                <div class="col-lg-8">
+                    <h3 class="fw-bold text-success mb-1"><i class="fas fa-route me-2"></i>สำนักงานส่งเสริมและพัฒนาการเกษตรที่ 2 จังหวัดราชบุรี</h3>
+                    <p class="text-muted mb-0">จัดทำโดย นายคณิศร ลักษณะโต เจ้าพนักงานธุรการชำนาญงาน ฝ่ายบริหารทั่วไป</p>
+                </div>
+                <div class="col-lg-4 text-end mt-3 mt-lg-0">
+                    <button type="button" id="btnResetCalc" class="btn btn-outline-danger btn-sm rounded-pill shadow-sm" onclick="window.location.reload();">
+                        <i class="fas fa-redo me-1"></i> ล้างข้อมูล
+                    </button>
+                </div>
+            </div>
+
+            <form id="travelCalcForm" onsubmit="return false;">
+                <div class="row g-4">
+                    
+                    <!-- Section 1: ข้อมูลผู้เดินทางหลัก -->
+                    <div class="col-lg-12">
+                        <div class="calc-card border-0">
+                            <div class="calc-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 fw-bold"><i class="fas fa-user-tag me-2"></i>1. ข้อมูลผู้เดินทางและสิทธิการเบิก</h5>
+                                <span class="section-badge">ข้อมูลหลัก</span>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="row g-3">
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold">หน่วยงาน / สังกัด <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="traveler_school" value="สำนักงานส่งเสริมและพัฒนาการเกษตรที่ 2 จังหวัดราชบุรี">
+                                    </div>
+                                    <div class="col-2">
+                                        <label class="form-label fw-bold">จังหวัด <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="traveler_province" value="ราชบุรี">
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold">กลุ่มงาน <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="traveler_workgroup" placeholder="เช่น ฝ่ายบริหารทั่วไป" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label fw-bold">ชื่อ-นามสกุล ผู้เดินทาง <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="traveler_name" placeholder="เช่น นายคณิศร ลักษณะโต" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <label class="form-label fw-bold">ตำแหน่ง<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="traveler_position" placeholder="เช่น เจ้าพนักงานธุรการชำนาญงาน">
+                                    </div>
+
+                                    <div class="col-8">
+                                        <label class="form-label fw-bold">ระดับตำแหน่ง / สิทธิในการเบิก <span class="text-danger">*</span></label>
+                                        <select class="form-select fw-bold text-success" id="traveler_level">
+                                            <option value="general" selected>ระดับทั่วไป / ชำนาญการพิเศษลงมา (เบี้ยเลี้ยง 240 / ที่พัก 800)</option>
+                                            <option value="senior">ระดับสูง / เชี่ยวชาญ (เบี้ยเลี้ยง 270 / ที่พัก 1,200)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">ตามคำสั่ง/บันทึก ที่ (สำหรับพิมพ์เอกสาร)</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="doc_order_no" placeholder="เลขที่คำสั่ง...">
+                                            <span class="input-group-text">ลงวันที่</span>
+                                            <input type="text" class="form-control date-picker" id="doc_order_date" placeholder="วว/ดด/ปปปป">
+                                        </div>
+                                    </div>
+
+                                    <!-- เสนอผู้บังคับบัญชา -->
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold">เสนอผู้บังคับบัญชา (เรียน) <span class="text-danger">*</span></label>
+                                        <select class="form-select fw-bold text-success" id="commander_type">
+                                            <option value="อธิบดีกรมส่งเสริมการเกษตร" selected>อธิบดีกรมส่งเสริมการเกษตร</option>
+                                            <option value="ผู้ว่าราชการจังหวัด">ผู้ว่าราชการจังหวัด</option>
+                                            <option value="นายอำเภอ">นายอำเภอ</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold">ชื่อ จังหวัด/อำเภอ/ศูนย์ฯ (ถ้าเขตฯ ไม่ต้องแกไข)<span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="pass_through" value="ผู้อำนวยการสำนักงานส่งเสริมและพัฒนาการเกษตรที่ ๒ จังหวัดราชบุรี">
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">วัตถุประสงค์การเดินทางไปราชการ <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="trip_purpose" placeholder="เช่น เข้าร่วมประชุม..." required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">สถานที่เดินทางไป <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="trip_location" placeholder="เช่น ตำบล อำเภอ จังหวัด..." required>
+                                    </div>
+
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold"><i class="fas fa-route text-info me-1"></i> ลักษณะการเดินทาง</label>
+                                        <select class="form-select mb-2 fw-bold text-dark border-info border-opacity-25" id="trip_type">
+                                            <option value="overnight" selected>พักแรม (นับ 24 ชม. เป็น 1 วัน)</option>
+                                            <option value="daytrip">ไม่พักแรม / ไป-กลับ (นับเกิน 12 ชม. หรือ 6 ชม.)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold"><i class="fas fa-calendar-alt text-success me-1"></i> วัน-เวลา ออกเดินทาง <span class="text-danger">*</span></label>
+                                        <div class="mb-2">
+                                            <input type="text" class="form-control text-center fw-bold bg-white border-success border-opacity-25 date-picker" id="start_date" placeholder="วว/ดด/ปปปป" required>
+                                        </div>
+                                        <div class="mb-2">
+                                            <input type="text" class="form-control text-center fw-bold bg-white border-success border-opacity-25 time-picker" id="start_time" placeholder="ระบุเวลา (น.)" value="06:00" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-3">
+                                        <label class="form-label fw-bold"><i class="fas fa-calendar-check text-success me-1"></i> วัน-เวลา กลับถึง <span class="text-danger">*</span></label>
+                                        <div class="mb-2">
+                                            <input type="text" class="form-control text-center fw-bold bg-white border-success border-opacity-25 date-picker" id="end_date" placeholder="วว/ดด/ปปปป" required>
+                                        </div>
+                                        <div class="mb-2">
+                                            <input type="text" class="form-control text-center fw-bold bg-white border-success border-opacity-25 time-picker" id="end_time" placeholder="ระบุเวลา (น.)" value="18:00" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-3 d-flex flex-column justify-content-end">
+                                        <label class="form-label fw-bold"><i class="fas fa-hourglass-half text-warning me-1"></i> ระยะเวลาเดินทางรวม</label>
+                                        <div class="p-2 bg-success bg-opacity-10 rounded w-100 border border-success border-opacity-25 text-center d-flex flex-column justify-content-center shadow-sm" style="min-height: 82px;">
+                                            <span class="fw-bold text-success fs-6" id="duration_display" style="font-size: 1.1rem !important;">0 วัน 0 ชั่วโมง 0 นาที</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: ข้อมูลผู้ร่วมเดินทาง -->
+                    <div class="col-lg-12">
+                        <div class="calc-card border-0 mb-2">
+                            <div class="calc-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #4776E6 0%, #8E54E9 100%);">
+                                <h5 class="mb-0 fw-bold"><i class="fas fa-users me-2"></i>2. ข้อมูลผู้ร่วมเดินทาง</h5>
+                                <span class="section-badge">อ้างอิงสิทธิร่วมกัน</span>
+                            </div>
+                            <div class="card-body p-4">
+                                <p class="text-muted small mb-3"><i class="fas fa-info-circle me-1"></i> ผู้ร่วมเดินทางจะใช้ข้อมูลวันเวลาเดินทางร่วมกับบุคคลหลักในข้อ 1</p>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered align-middle" id="coTravelerTable">
+                                        <thead>
+                                            <tr class="text-center table-light">
+                                                <th style="width: 5%;">ลำดับ</th>
+                                                <th style="width: 30%;">ชื่อ - สกุล</th>
+                                                <th style="width: 30%;">ตำแหน่ง</th>
+                                                <th style="width: 30%;">ระดับตำแหน่ง / สิทธิการเบิก</th>
+                                                <th style="width: 5%;" class="no-print">ลบ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="coTravelerBody">
+                                            <!-- Rows here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill mt-2 no-print" id="btn-add-cotraveler">
+                                    <i class="fas fa-plus me-1"></i> เพิ่มผู้ร่วมเดินทาง
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: เบี้ยเลี้ยง -->
+                    <div class="col-lg-6">
+                        <div class="calc-card border-0 h-100">
+                            <div class="calc-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                                <h5 class="mb-0 fw-bold"><i class="fas fa-utensils me-2"></i>3. ค่าเบี้ยเลี้ยงเดินทาง</h5>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="rate-highlight-card" style="border-left-color: #10b981;">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <span class="text-muted d-block small">อัตราเบี้ยเลี้ยงบุคคลหลัก</span>
+                                                <strong class="fs-4 text-success" id="per_diem_rate_display">240</strong> <span class="text-muted">บาท/วัน</span>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="text-muted d-block small">จำนวนวันที่คำนวณได้</span>
+                                                <strong class="fs-4 text-dark" id="per_diem_days_display">0</strong> <span class="text-muted">วัน</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">ปรับแก้จำนวนวันเบี้ยเลี้ยง (หากมี)</label>
+                                        <input type="number" step="0.5" min="0" class="form-control" id="custom_per_diem_days" placeholder="ปล่อยว่างเพื่อใช้อัตโนมัติ">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-danger">กรณีมีจัดเลี้ยงอาหาร / หักเบี้ยเลี้ยง</label>
+                                        <select class="form-select" id="deduct_meals">
+                                            <option value="0" selected>ไม่หัก (ไม่มีจัดเลี้ยงอาหาร)</option>
+                                            <option value="1">หัก 1 มื้อ (ลด 1/3 ของอัตราวันละ 1 วัน)</option>
+                                            <option value="2">หัก 2 มื้อ (ลด 2/3 ของอัตราวันละ 1 วัน)</option>
+                                            <option value="3">หัก 3 มื้อ (ลดเบี้ยเลี้ยงเต็ม 1 วัน)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-light rounded-3 border mt-3 d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-dark fs-6">รวมค่าเบี้ยเลี้ยง (ทั้งคณะ):</span>
+                                    <span class="fw-bold text-success fs-4" id="total_per_diem_display">0.00 <small class="fs-6 text-muted">บาท</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: ค่าที่พัก -->
+                    <div class="col-lg-6">
+                        <div class="calc-card border-0 h-100">
+                            <div class="calc-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #f09819 0%, #edde5d 100%); color: #1e293b;">
+                                <h5 class="mb-0 fw-bold"><i class="fas fa-hotel me-2"></i>4. ค่าเช่าที่พัก</h5>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold">เลือกประเภทการเบิกค่าที่พัก <span class="text-danger">*</span></label>
+                                        <select class="form-select fw-bold" id="accom_type">
+                                            <option value="none">ไม่เบิกค่าเช่าที่พัก / พักฟรี หรือ ไป-กลับ</option>
+                                            <option value="flat" selected>แบบเหมาจ่าย (อัตรา 800 / 1,200 บาท)</option>
+                                            <option value="actual_single">แบบจ่ายจริง - ห้องพักคนเดียว</option>
+                                            <option value="actual_twin">แบบจ่ายจริง - ห้องพักคู่</option>
+                                        </select>
+                                    </div>
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-6">
+                                            <label class="form-label fw-bold">จำนวนคืนที่พัก (คืน)</label>
+                                            <input type="number" step="1" min="0" class="form-control text-center fw-bold" id="accom_nights" value="0">
+                                        </div>
+                                        <div class="col-6" id="actual_rate_container" style="display: none;">
+                                            <label class="form-label fw-bold">ค่าที่พักจ่ายจริง (บาท/คืน)</label>
+                                            <input type="number" step="1" min="0" class="form-control text-end text-primary fw-bold" id="accom_actual_price">
+                                        </div>
+                                    </div>
+                                    <div class="form-check mb-3 p-3 bg-light rounded border">
+                                        <input class="form-check-input ms-1" type="checkbox" id="is_special_area">
+                                        <label class="form-check-label fw-bold ms-2 text-dark" for="is_special_area">เดินทางไปในท้องที่พิเศษ</label>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-light rounded-3 border mt-3 d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-dark fs-6">รวมค่าเช่าที่พัก (ทั้งคณะ):</span>
+                                    <span class="fw-bold text-warning fs-4" style="color: #d97706 !important;" id="total_accom_display">0.00 <small class="fs-6 text-muted">บาท</small></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 5: ค่าพาหนะ -->
+                    <div class="col-lg-12">
+                        <div class="calc-card border-0">
+                            <div class="calc-header d-flex justify-content-between align-items-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <h5 class="mb-0 fw-bold"><i class="fas fa-car-side me-2"></i>5. ค่าพาหนะและการเดินทาง</h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <div class="mb-3 gap-2 no-print">
+                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill btn-add-transport" data-type="car">🚗 รถยนต์ (4 บ./กม.)</button>
+                                    <button type="button" class="btn btn-outline-info btn-sm rounded-pill btn-add-transport" data-type="motorcycle">🏍️ มอเตอร์ไซค์ (2 บ./กม.)</button>
+                                    <button type="button" class="btn btn-outline-success btn-sm rounded-pill btn-add-transport" data-type="gov_car">🚙 รถยนต์ราชการ</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill btn-add-transport" data-type="other">📄 เพิ่มรายการอื่นๆ</button>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered align-middle table-dynamic" id="transportTable">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th style="width: 25%;">ประเภทพาหนะ</th>
+                                                <th style="width: 35%;">รายละเอียดเส้นทาง</th>
+                                                <th style="width: 18%;">ระยะทาง (กม.) / จำนวน</th>
+                                                <th style="width: 15%;">จำนวนเงิน (บาท)</th>
+                                                <th style="width: 7%;" class="no-print">ลบ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="transportBody">
+                                            <!-- Rows here -->
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-light fw-bold">
+                                                <td colspan="3" class="text-end text-dark fs-6">รวมค่าพาหนะทั้งสิ้น:</td>
+                                                <td class="text-end text-primary fs-5" id="total_transport_display">0.00</td>
+                                                <td class="no-print"></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 6: สรุปยอดรวม พร้อมปุ่มพิมพ์ -->
+                    <div class="col-lg-12">
+                        <div class="summary-card shadow-lg">
+                            <div class="row align-items-center g-4">
+                                <div class="col-md-7">
+                                    <h4 class="fw-bold text-white mb-2"><i class="fas fa-wallet me-2 text-info"></i>สรุปยอดรวมค่าใช้จ่ายทั้งสิ้น</h4>
+                                    <div class="d-flex flex-wrap gap-3 mb-3 text-light opacity-75 small">
+                                        <span><i class="fas fa-check me-1 text-success"></i> เบี้ยเลี้ยง: <strong class="text-white" id="sum_per_diem_txt">0.00</strong></span> |
+                                        <span><i class="fas fa-check me-1 text-warning"></i> ที่พัก: <strong class="text-white" id="sum_accom_txt">0.00</strong></span> |
+                                        <span><i class="fas fa-check me-1 text-info"></i> พาหนะ+อื่นๆ: <strong class="text-white" id="sum_transport_txt">0.00</strong></span>
+                                    </div>
+                                    <div class="total-amount-display mb-1" id="grand_total_display">0.00 <span class="fs-4 text-white">บาท</span></div>
+                                    <div class="thai-baht-text"><i class="fas fa-quote-left me-2 opacity-50"></i><span id="thai_baht_text_display">ศูนย์บาทถ้วน</span><i class="fas fa-quote-right ms-2 opacity-50"></i></div>
+                                </div>
+                                
+                                <div class="col-md-5 print-btn-container px-4">
+                                    <button type="button" class="btn-print-huge w-100" id="btn_print_pdf">
+                                        <i class="fas fa-print fa-2x mb-2 d-block"></i> สั่งพิมพ์เอกสาร
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================== PRINT SECTION (หน้ากระดาษเสมือนจริง จัดตาม Excel & รูปภาพ) ================== -->
+    <!-- จะถูกแสดงเฉพาะตอนกดปริ้นท์ (Ctrl+P) เท่านั้น -->
+    <div id="print-section">
+        
+        <!-- หน้าที่ 1 (ใบเบิก 8708) -->
+        <div class="page-break">
+            
+            <!-- 1. หัวกระดาษ (จัดตามรูปที่แนบ รูปที่ 4) -->
+            <div style="display: flex; justify-content: space-between; font-size: 11pt; margin-bottom: 10px; line-height: 1.5; margin-top: 15px;">
+                <div style="width: 75%;">
+                    <div class="f-row">
+                        <div style="flex: 1; display: flex;">สัญญาเงินยืมเลขที่ <span class="val" style="flex:1; margin: 0 10px;"></span></div>
+                        <div style="width: 250px; display: flex;">วันที่ <span class="val" style="flex:1; margin-left: 10px;"></span></div>
+                    </div>
+                    <div class="f-row" style="margin-top: 5px;">
+                        <div style="flex: 1; display: flex;">ชื่อผู้ยืม <span class="val" style="flex:1; margin: 0 10px;"></span></div>
+                        <div style="width: 250px; display: flex;">จำนวนเงินยืม <span class="val" style="flex:1; margin: 0 10px;"></span> บาท</div>
+                    </div>
+                </div>
+                <div style="width: 30%; text-align: right;">
+                    <div>ส่วนที่ 1</div>
+                    <div>แบบ 8708</div>
+                </div>
+            </div>
+
+            <div class="text-center fw-bold" style="font-size: 14pt; margin: 15px 0 20px 0;">
+                ใบเบิกค่าใช้จ่ายในการเดินทางไปราชการ
+            </div>
+
+            <!-- ที่ทำการ & วันที่ -->
+            <div style="text-align: right; margin-bottom: 10px; line-height: 1.5;">
+                ที่ทำการ <span class="val text-center" id="pr_office" style="min-width: 200px;"></span><br>
+                วันที่ <span class="val text-center" id="pr_doc_d" style="width: 40px;"></span> 
+                เดือน <span class="val text-center" id="pr_doc_m" style="width: 120px;"></span> 
+                พ.ศ. <span class="val text-center" id="pr_doc_y" style="width: 60px;"></span>
+            </div>
+
+            <div class="f-row" style="margin-bottom: 5px;">เรื่อง &nbsp;&nbsp;&nbsp;ขออนุมัติเบิกค่าใช้จ่ายในการเดินทางไปราชการ</div>
+            
+            <div class="f-row" style="margin-bottom: 10px;">เรียน &nbsp;<span class="val-left" style="flex: 1;" id="pr_commander"></span></div>
+
+            <div class="indent f-row" style="margin-bottom: 5px; flex-wrap: nowrap; white-space: nowrap;">
+                ตามคำสั่ง/บันทึกข้อความ <span class="val text-center" id="pr_order_no" style="flex: 1; margin: 0 10px;"></span>
+                ลงวันที่ <span class="val text-center" id="pr_order_date" style="flex: 1; margin: 0 10px;"></span>
+                ได้อนุมัติให้
+            </div>
+
+            <div class="f-row" style="margin-bottom: 5px;">
+                ข้าพเจ้า <span class="val-left" id="pr_main_name" style="width: 280px; margin: 0 10px;"></span>
+                ตำแหน่ง <span class="val-left" id="pr_main_pos" style="flex: 1; margin-left: 10px;"></span>
+            </div>
+            <div class="f-row" style="margin-bottom: 5px;">
+                สังกัด <span class="val-left" id="pr_main_dept" style="flex: 1; margin: 0 10px;"></span> 
+                พร้อมด้วย
+            </div>
+
+            <!-- ผู้ร่วมเดินทาง 1-4 -->
+            <div class="indent" style="margin-bottom: 5px; line-height: 1.5;">
+                <div class="f-row">1. <span class="val-left" id="pr_c1_n" style="width: 280px; margin: 0 10px;"></span> ตำแหน่ง <span class="val-left" id="pr_c1_p" style="flex: 1; margin-left: 10px;"></span></div>
+                <div class="f-row">2. <span class="val-left" id="pr_c2_n" style="width: 280px; margin: 0 10px;"></span> ตำแหน่ง <span class="val-left" id="pr_c2_p" style="flex: 1; margin-left: 10px;"></span></div>
+                <div class="f-row">3. <span class="val-left" id="pr_c3_n" style="width: 280px; margin: 0 10px;"></span> ตำแหน่ง <span class="val-left" id="pr_c3_p" style="flex: 1; margin-left: 10px;"></span></div>
+                <div class="f-row">4. <span class="val-left" id="pr_c4_n" style="width: 280px; margin: 0 10px;"></span> ตำแหน่ง <span class="val-left" id="pr_c4_p" style="flex: 1; margin-left: 10px;"></span></div>
+            </div>
+
+            <!-- การเดินทาง (แก้ไขสถานที่และวัตถุประสงค์ตามคำสั่งใหม่) -->
+            <div class="f-row" style="margin-bottom: 5px;">
+                เดินทางไปปฏิบัติราชการ <span class="val-left" id="pr_trip_purpose" style="flex: 1; margin-left: 10px;"></span>
+            </div>
+            <div class="f-row" style="margin-bottom: 5px;">
+                ที่ <span class="val-left" id="pr_trip_loc" style="flex: 1; margin-left: 10px;"></span>
+            </div>
+
+            <div style="text-align: right; margin-bottom: 5px; padding-right: 15px;">โดยออกเดินทางจาก</div>
+            <div style="line-height: 1.6; margin-bottom: 10px;">
+                <div class="f-row" style="margin-bottom: 5px; flex-wrap: nowrap; white-space: nowrap;">
+                    <span class="chk" style="margin-left: 10px;">◯</span> บ้านพัก &nbsp;
+                    <span class="chk">◯</span> สำนักงาน &nbsp;
+                    <span class="chk">◯</span> ประเทศไทย &nbsp;&nbsp;
+                    ตั้งแต่วันที่ <span class="val text-center" id="pr_s_d" style="width: 30px;"></span>
+                    เดือน <span class="val text-center" id="pr_s_m" style="flex:1;"></span>
+                    พ.ศ. <span class="val text-center" id="pr_s_y" style="width: 40px;"></span>
+                    เวลา <span class="val text-center" id="pr_s_t" style="width: 40px;"></span> น.
+                </div>
+                <div class="f-row" style="margin-bottom: 5px; flex-wrap: nowrap; white-space: nowrap;">
+                    และกลับถึง <span class="chk" style="margin-left: 10px;">◯</span> บ้านพัก &nbsp;
+                    <span class="chk">◯</span> สำนักงาน &nbsp;
+                    <span class="chk">◯</span> ประเทศไทย &nbsp;&nbsp;
+                    วันที่ <span class="val text-center" id="pr_e_d" style="width: 30px;"></span>
+                    เดือน <span class="val text-center" id="pr_e_m" style="flex:1;"></span>
+                    พ.ศ. <span class="val text-center" id="pr_e_y" style="width: 40px;"></span>
+                    เวลา <span class="val text-center" id="pr_e_t" style="width: 40px;"></span> น.
+                </div>
+                <div class="f-row">
+                    รวมเวลาไปราชการครั้งนี้ <span class="val text-center" id="pr_t_d" style="width: 60px; margin: 0 10px;"></span> วัน 
+                    <span class="val text-center" id="pr_t_h" style="width: 60px; margin: 0 10px;"></span> ชั่วโมง 
+                </div>
+            </div>
+
+            <!-- ข้อ 3 ชิดซ้าย -->
+            <div class="f-row" style="margin-bottom: 10px;">
+                ข้าพเจ้าขอเบิกค่าใช้จ่ายในการเดินทางไปราชการสำหรับ &nbsp;&nbsp;&nbsp;&nbsp;
+                <span class="chk" id="chk_for_me">◯</span> ข้าพเจ้า &nbsp;&nbsp;
+                <span class="chk" id="chk_for_group">◯</span> คณะเดินทาง &nbsp;&nbsp; ดังนี้
+            </div>
+
+            <!-- แจกแจงยอดเงิน ชิดซ้าย -->
+            <div style="line-height: 1.6; margin-bottom: 10px;">
+                <div class="f-row">
+                    ค่าเบี้ยเลี้ยงเดินทางประเภท <span style="flex:1; border-bottom: 1px dotted black; margin: 0 10px;"></span> 
+                    จำนวน <span class="val text-center" id="pr_alw_d" style="width:60px; margin: 0 10px;"></span> วัน 
+                    <span style="margin-left: 20px;">รวม</span> <span class="val text-end" id="pr_alw_tot" style="width:100px; margin: 0 10px;"></span> บาท
+                </div>
+                <div class="f-row">
+                    ค่าเช่าที่พักประเภท <span style="flex:1; border-bottom: 1px dotted black; margin: 0 10px;"></span> 
+                    จำนวน <span class="val text-center" id="pr_acc_d" style="width:60px; margin: 0 10px;"></span> วัน 
+                    <span style="margin-left: 20px;">รวม</span> <span class="val text-end" id="pr_acc_tot" style="width:100px; margin: 0 10px;"></span> บาท
+                </div>
+                <div class="f-row">
+                    ค่าพาหนะ <span class="val text-center" id="pr_trp_type" style="flex:1; margin: 0 10px; border-color: transparent;"></span> 
+                    <span style="margin-left: 110px;">รวม</span> <span class="val text-end" id="pr_trp_tot" style="width:100px; margin: 0 10px;"></span> บาท
+                </div>
+                <div class="f-row">
+                    ค่าใช้จ่ายอื่น <span style="flex:1; border-bottom: 1px dotted black; margin: 0 10px;"></span> 
+                    <span style="margin-left: 110px;">รวม</span> <span class="val text-end" id="pr_oth_tot" style="width:100px; margin: 0 10px;"></span> บาท
+                </div>
+                <div class="f-row" style="margin-top: 5px;">
+                    <span style="flex:1;"></span>
+                    <span class="fw-bold">รวมเงินทั้งสิ้น</span> <span class="val text-end fw-bold" id="pr_grd_tot" style="width:150px; margin: 0 10px;"></span> บาท
+                </div>
+            </div>
+
+            <div class="f-row" style="margin-bottom: 10px;">
+                จำนวนเงิน (ตัวอักษร) <span class="val-left text-center" id="pr_baht_txt" style="flex: 1; margin-left: 10px;"></span>
+            </div>
+
+            <!-- รับรองข้อมูล -->
+            <div class="f-row" style="margin-bottom: 5px;">
+                ข้าพเจ้าขอรับรองว่ารายการที่กล่าวมาข้างต้นเป็นความจริง และหลักฐานการจ่ายที่ส่งมาด้วย จำนวน <span class="val text-center" style="width:50px; margin: 0 10px;"></span> ฉบับ
+            </div>
+            <div class="f-row" style="margin-bottom: 20px;">
+                รวมทั้งจำนวนเงินที่ขอเบิกถูกต้องตามกฎหมายทุกประการ
+            </div>
+
+            <!-- จุดลงนามท้ายหน้า 1 (จัดตามไฟล์ Excel ใหม่) -->
+            <div style="display: flex; justify-content: space-between; text-align: center;">
+                <div style="width: 45%;">
+                    <div style="margin-bottom: 15px;">ลงชื่อผู้ตรวจ</div>
+                    <div>( <span style="border-bottom: 1px dotted #000; display: inline-block; width: 200px;"></span> )</div>
+                    <div style="margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <div style="display: flex; width: 80%;"><span style="width: 60px; text-align: left;">ตำแหน่ง</span><span style="flex: 1;"></span></div>
+                        <div style="display: flex; width: 80%;"><span style="width: 60px; text-align: left;">วันที่</span><span style="flex: 1;"></span></div>
+                    </div>
+                </div>
+                <div style="width: 45%;">
+                    <div style="margin-bottom: 15px;">ลงชื่อผู้ขอรับเงิน</div>
+                    <div>( <span style="border-bottom: 1px dotted #000; display: inline-block; width: 200px;"></span> )</div>
+                    <div style="margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <div style="display: flex; width: 80%;"><span style="width: 60px; text-align: left;">ตำแหน่ง</span><span style="flex: 1;"></span></div>
+                        <div style="display: flex; width: 80%;"><span style="width: 60px; text-align: left;">วันที่</span><span style="flex: 1;"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================== หน้าที่ 2 (- ๒ -) ================== -->
+        <div class="page-break" style="padding-top: 20px;">
+            <div class="text-center" style="margin-bottom: 20px;">-2-</div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                <div style="width: 45%; padding-left: 20px;">
+                    <div style="margin-bottom: 25px;">ได้ตรวจสอบหลักฐานการเบิกจ่ายเงินที่แนบถูกต้องแล้ว เห็นควรอนุมัติให้เบิกจ่ายได้</div>
+                    
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>ลงชื่อ</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>(</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>)</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>ตำแหน่ง</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                    <div class="f-row">
+                        <span>วันที่</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                </div>
+                
+                <div style="width: 45%;">
+                    <div class="text-center" style="margin-bottom: 45px;">อนุมัติให้จ่ายได้</div>
+                    
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>ลงชื่อ</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>(</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>)</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>ตำแหน่ง</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                    <div class="f-row">
+                        <span>วันที่</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="f-row" style="margin-top: 30px;">
+                <span class="indent">ได้รับเงินค่าใช้จ่ายในการเดินทางไปราชการ จำนวน</span> <span class="val text-center fw-bold" id="pr2_amt" style="width: 150px; padding: 0 15px; border-color: transparent;"></span> บาท
+            </div>
+            <div class="f-row" style="margin-bottom: 40px;">
+                ( <span class="val text-center fw-bold" id="pr2_baht" style="flex: 1; border-color: transparent;"></span> ) ไว้เป็นการถูกต้องแล้ว
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; margin-bottom: 40px; text-align: center;">
+                <div style="width: 45%;">
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>ลงชื่อ</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>ผู้รับเงิน</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>(</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>)</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+                        <span>ตำแหน่ง </span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                    <div class="f-row" style="display: flex; align-items: center; justify-content: center;">
+                        <span>วันที่</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                </div>
+                <div style="width: 45%;">
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>ลงชื่อ</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>ผู้จ่ายเงิน</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px;">
+                        <span>(</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>)</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 15px; display: flex; align-items: center; justify-content: center;">
+                        <span>ตำแหน่ง </span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                    <div class="f-row" style="display: flex; align-items: center; justify-content: center;">
+                        <span>วันที่</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="f-row" style="margin-bottom: 20px;">
+                จากเงินยืมตามสัญญาเลขที่ <span style="border-bottom:1px dotted #000; width:200px; margin:0 10px;"></span> 
+                วันที่ <span style="border-bottom:1px dotted #000; flex:1; margin-left: 10px;"></span>
+            </div>
+
+            <div style="margin-top: 20px; font-size: 10pt; line-height: 1.4;">
+                <div class="fw-bold" style="margin-bottom: 5px;">หมายเหตุ ............................................................................................................................................................................................</div>
+                <div style="margin-bottom: 5px;">..............................................................................................................................................................................................................</div>
+                <div style="margin-bottom: 5px;">.............................................................................................................................................................................................................</div>
+                <div style="margin-bottom: 15px;">.............................................................................................................................................................................................................</div>
+                
+                <div style="display: flex;">
+                    <div class="fw-bold" style="width: 80px;">คำชี้แจง</div>
+                    <div style="flex: 1;">
+                        1. กรณีเดินทางเป็นหมู่คณะและจัดทำใบเบิกค่าใช้จ่ายรวมฉบับเดียวกัน หากระยะเวลาในการเริ่มต้นและสิ้นสุดการ<br>
+                        เดินทางของแต่ละบุคคลแตกต่างกัน ให้แสดงรายละเอียดของวันเวลาที่แตกต่างกันของบุคคลนั้นในช่องหมายเหตุ<br>
+                        2. กรณียื่นขอเบิกค่าใช้จ่ายรายบุคคล ให้ผู้ขอรับเงินเป็นผู้ลงลายมือชื่อผู้รับเงินและวันเดือนปีที่รับเงิน กรณีที่มีการ<br>
+                        ยืมเงิน ให้ระบุวันที่ที่ได้รับเงินยืม เลขที่สัญญายืมและวันที่อนุมัติยืมด้วย<br>
+                        3. กรณีที่ยื่นขอเบิกค่าใช้จ่ายรวมเป็นหมู่คณะ ผู้ขอรับเงินมิต้องลงลายมือชื่อในช่องผู้รับเงิน ทั้งนี้ ให้ผู้มีสิทธิแต่ละคน<br>
+                        ลงลายมือชื่อผู้รับเงินในหลักฐานการจ่ายเงิน (ส่วนที่ 2)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================== หน้าที่ 3 (ตารางแนบ แสดงเมื่อเดินทางเกิน 1 คน) ================== -->
+        <!-- เพิ่ม class page-landscape เพื่อบังคับเป็นแนวนอนและลบ style="display: none;" ออกเพื่อให้แสดงเสมอ -->
+        <div class="page-break page-landscape" id="page3_container" style="padding-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <div class="text-center fw-bold" style="flex: 1; font-size: 13pt;">หลักฐานการจ่ายเงินค่าใช้จ่ายในการเดินทางไปราชการ</div>
+                <div style="text-align: right; width: 100px;">ส่วนที่ 2<br>แบบ 8708</div>
+            </div>
+            
+            <div class="f-row" style="margin-bottom: 5px;">
+                ชื่อส่วนราชการ <span class="val text-center" id="pr3_office" style="flex: 1; margin: 0 15px;"></span> 
+                จังหวัด <span class="val text-center" id="pr3_province" style="width: 150px; margin: 0 15px;">ราชบุรี</span>
+            </div>
+            <div class="f-row" style="margin-bottom: 10px;">
+                ประกอบใบเบิกค่าใช้จ่ายในการเดินทางของ <span class="val text-center" id="pr3_main" style="width: 250px; margin: 0 15px;"></span>
+                และคณะ ลงวันที่ <span class="val text-center" id="pr3_doc_d" style="width: 50px; margin: 0 5px;"></span>
+                เดือน <span class="val text-center" id="pr3_doc_m" style="width: 120px; margin: 0 5px;"></span>
+                พ.ศ. <span class="val text-center" id="pr3_doc_y" style="width: 60px; margin: 0 5px;"></span>
+            </div>
+            
+            <!-- โครงสร้าง 11 คอลัมน์แบบ Excel -->
+            <table class="t-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 4%;">ลำดับ<br>ที่</th>
+                        <th rowspan="2" style="width: 16%;">ชื่อ</th>
+                        <th rowspan="2" style="width: 16%;">ตำแหน่ง</th>
+                        <th colspan="4">ค่าใช้จ่าย (บาท)</th>
+                        <th rowspan="2" style="width: 8%;">รวม</th>
+                        <th rowspan="2" style="width: 12%;">ลายมือชื่อ<br>ผู้รับเงิน</th>
+                        <th rowspan="2" style="width: 12%;">วัน เดือน ปี<br>ที่รับเงิน</th>
+                        <th rowspan="2" style="width: 6%;">หมาย<br>เหตุ</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 6.5%;">ค่าเบี้ยเลี้ยง</th>
+                        <th style="width: 6.5%;">ค่าเช่าที่พัก</th>
+                        <th style="width: 6.5%;">ค่าพาหนะ</th>
+                        <th style="width: 6.5%;">อื่นๆ</th>
+                    </tr>
+                </thead>
+                <tbody id="pr3_tbody">
+                    <!-- จะถูกเติมด้วย Javascript แต่บังคับให้มีแถวว่างๆ ถ้าข้อมูลไม่พอ -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold" style="padding-right: 15px;">รวมเงิน</td>
+                        <td id="pr3_s_alw" class="text-end pe-1"></td>
+                        <td id="pr3_s_acc" class="text-end pe-1"></td>
+                        <td id="pr3_s_trp" class="text-end pe-1"></td>
+                        <td id="pr3_s_oth" class="text-end pe-1"></td>
+                        <td id="pr3_s_grd" class="text-end pe-1 fw-bold" style="color: blue;"></td>
+                        <td colspan="3" class="text-start" style="font-size: 9pt;">ตามสัญญาเงินยืมเลขที่ ...........................................................<br>วันที่ ........................................................................</td>
+                    </tr>
+                </tfoot>
+            </table>
+            
+            <div class="f-row" style="margin-top: 15px; margin-bottom: 10px;">
+                <span class="indent">จำนวนเงินรวมทั้งสิ้น (ตัวอักษร)</span> <span class="val text-center fw-bold" id="pr3_baht" style="flex:1; margin-left: 15px; border-color:transparent;"></span>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                <div style="width: 350px;">
+                    <div class="f-row" style="margin-bottom: 5px;">
+                        <span>ลงชื่อ</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>ผู้จ่ายเงิน</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 5px;">
+                        <span style="margin-left: 30px;">(</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span><span>)</span>
+                    </div>
+                    <div class="f-row" style="margin-bottom: 5px;">
+                        <span>ตำแหน่ง</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                    <div class="f-row">
+                        <span>วันที่</span><span style="border-bottom:1px dotted #000; flex:1; margin:0 10px;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="font-size: 10pt; line-height: 1.4;">
+                <div style="display: flex;">
+                    <div class="fw-bold" style="width: 60px;">คำชี้แจง</div>
+                    <div style="flex: 1;">
+                        1. ค่าเบี้ยเลี้ยงและค่าเช่าที่พักให้ระบุอัตราวันละและจำนวนวันที่ขอเบิกของแต่ละบุคคลในช่องหมายเหตุ<br>
+                        2. ให้ผู้มีสิทธิแต่ละคนเป็นผู้ลงลายมือชื่อผู้รับเงินและวันเดือนปีที่ได้รับเงิน กรณีเป็นการรับจากเงินยืม ให้ระบุวันที่ที่ได้รับจากเงินยืม<br>
+                        3. ผู้จ่ายเงินหมายถึงผู้ที่ขอยืมเงินจากทางราชการ และจ่ายเงินยืมนั้นให้แก่ผู้เดินทางแต่ละคน เป็นผู้ลงลายมือชื่อผู้จ่ายเงิน
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/th.js"></script>
+
+    <script>
+    const monthNames = ["", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+    
+    function toThaiBahtText(Number) {
+        var TxtNumArr = new Array("ศูนย์", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า", "สิบ");
+        var TxtDigitArr = new Array("", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน");
+        var BahtText = "";
+        if (isNaN(Number)) return "ศูนย์บาทถ้วน";
+        if ((Number - 0) * 1 == 0) return "ศูนย์บาทถ้วน";
+        Number = Math.round(Number * 100) / 100;
+        var NumberStr = Number.toString();
+        var NumberArr = NumberStr.split(".");
+        var Number1 = NumberArr[0];
+        var Number2 = NumberArr[1] ? NumberArr[1] : "";
+        var tmp1 = "";
+        for (var i = 0; i < Number1.length; i++) {
+            var tmp = Number1.substring(i, i + 1) - 0;
+            if (tmp != 0) {
+                if ((i == (Number1.length - 1)) && (tmp == 1) && (Number1.length > 1)) { tmp1 += "เอ็ด"; }
+                else if ((i == (Number1.length - 2)) && (tmp == 2)) { tmp1 += "ยี่"; }
+                else if ((i == (Number1.length - 2)) && (tmp == 1)) { tmp1 += ""; }
+                else { tmp1 += TxtNumArr[tmp]; }
+                tmp1 += TxtDigitArr[Number1.length - i - 1];
+            }
+        }
+        BahtText += tmp1 + "บาท";
+        if (Number2 == "" || Number2 == "00" || Number2 == "0") {
+            BahtText += "ถ้วน";
+        } else {
+            if (Number2.length == 1) { Number2 += "0"; }
+            var tmp2 = "";
+            for (var i = 0; i < Number2.length; i++) {
+                var tmp = Number2.substring(i, i + 1) - 0;
+                if (tmp != 0) {
+                    if ((i == (Number2.length - 1)) && (tmp == 1) && (Number2.length > 1)) { tmp2 += "เอ็ด"; }
+                    else if ((i == (Number2.length - 2)) && (tmp == 2)) { tmp2 += "ยี่"; }
+                    else if ((i == (Number2.length - 2)) && (tmp == 1)) { tmp2 += ""; }
+                    else { tmp2 += TxtNumArr[tmp]; }
+                    tmp2 += TxtDigitArr[Number2.length - i - 1];
+                }
+            }
+            BahtText += tmp2 + "สตางค์";
+        }
+        return BahtText;
+    }
+
+    function parseThaiDate(dateStr) {
+        if(!dateStr) return { d:'', m:'', y:'' };
+        let parts = dateStr.split('/');
+        if(parts.length === 3) {
+            return { d: parseInt(parts[0]), m: monthNames[parseInt(parts[1])], y: parseInt(parts[2]) + 543 };
+        }
+        return { d:'', m:'', y:'' };
+    }
+
+    function parseDateObj(dateStr) {
+        let parts = dateStr.split('/');
+        if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return "";
+    }
+
+    function addCoTraveler() {
+        let tr = `
+        <tr>
+            <td class="text-center cotraveler-index"></td>
+            <td><input type="text" class="form-control form-control-sm ct-name" placeholder="ชื่อ-นามสกุล"></td>
+            <td><input type="text" class="form-control form-control-sm ct-pos" placeholder="ตำแหน่ง"></td>
+            <td>
+                <select class="form-select form-select-sm fw-bold text-primary ct-level">
+                    <option value="general" selected>ระดับทั่วไป / ชำนาญการพิเศษลงมา</option>
+                    <option value="senior">ระดับสูง / เชี่ยวชาญ</option>
+                </select>
+            </td>
+            <td class="text-center no-print">
+                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-cotraveler"><i class="fas fa-trash-alt"></i></button>
+            </td>
+        </tr>`;
+        $('#coTravelerBody').append(tr);
+        updateCoTravelerIndexes();
+        calculateAll();
+    }
+
+    function removeCoTraveler(btn) {
+        $(btn).closest('tr').remove();
+        updateCoTravelerIndexes();
+        calculateAll();
+    }
+
+    function updateCoTravelerIndexes() {
+        $('#coTravelerBody tr').each(function(index) {
+            $(this).find('.cotraveler-index').text(index + 1);
+        });
+    }
+
+    function addTransportRow(type, desc, dist) {
+        let amtValue = (type === 'car') ? (dist * 4).toFixed(2) : 
+                       (type === 'motorcycle') ? (dist * 2).toFixed(2) : '0.00';
+                       
+        let rowHtml = `
+            <tr>
+                <td>
+                    <select class="form-select form-select-sm transport-type fw-bold text-dark">
+                        <option value="car" ${type === 'car' ? 'selected' : ''}>🚗 รถยนต์ส่วนบุคคล</option>
+                        <option value="motorcycle" ${type === 'motorcycle' ? 'selected' : ''}>🏍️ รถจักรยานยนต์</option>
+                        <option value="gov_car" ${type === 'gov_car' ? 'selected' : ''}>🚙 รถยนต์ราชการ</option>
+                        <option value="other" ${type === 'other' ? 'selected' : ''}>📄 อื่นๆ / รถสาธารณะ</option>
+                    </select>
+                </td>
+                <td><input type="text" class="form-control form-control-sm transport-desc" value="${desc}"></td>
+                <td><input type="number" step="1" min="0" class="form-control form-control-sm text-center transport-dist" value="${dist}"></td>
+                <td><input type="number" step="0.01" min="0" class="form-control form-control-sm text-end transport-amount fw-bold text-primary" value="${amtValue}"></td>
+                <td class="text-center no-print">
+                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-transport"><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>`;
+        $('#transportBody').append(rowHtml);
+        calculateAll();
+    }
+
+    let globalCalcData = {};
+
+    function calculateAll() {
+        let sDateRaw = $('#start_date').val(), eDateRaw = $('#end_date').val();
+        let sTime = $('#start_time').val() || "00:00", eTime = $('#end_time').val() || "00:00";
+        let sDate = parseDateObj(sDateRaw), eDate = parseDateObj(eDateRaw);
+        
+        let calcDays = 0, diffHrs = 0;
+        let finalDays = 0, finalHours = 0, finalMins = 0;
+
+        if (sDate && eDate) {
+            let start = new Date(`${sDate}T${sTime}:00`);
+            let end = new Date(`${eDate}T${eTime}:00`);
+            
+            let diffMs = end - start;
+            diffHrs = diffMs / (1000 * 60 * 60); 
+
+            if (diffHrs > 0) {
+                let totalMins = Math.floor(diffMs / (1000 * 60));
+                finalDays = Math.floor(totalMins / (24 * 60));
+                let remMinsTotal = totalMins % (24 * 60);
+                finalHours = Math.floor(remMinsTotal / 60);
+                finalMins = remMinsTotal % 60;
+                
+                $('#duration_display').text(`${finalDays} วัน ${finalHours} ชั่วโมง ${finalMins} นาที`);
+                
+                let tripType = $('#trip_type').val();
+                if (tripType === 'overnight') {
+                    calcDays = finalDays + ((diffHrs % 24) > 12 ? 1 : 0);
+                } else {
+                    calcDays = diffHrs > 12 ? 1 : (diffHrs > 6 ? 0.5 : 0);
+                }
+                
+                let customDays = $('#custom_per_diem_days').val();
+                if (customDays !== "") calcDays = parseFloat(customDays);
+                
+                $('#per_diem_days_display').text(calcDays);
+            } else {
+                $('#duration_display').text('0 วัน 0 ชั่วโมง 0 นาที');
+                $('#per_diem_days_display').text(0);
+            }
+        }
+
+        let deductMeals = parseInt($('#deduct_meals').val()) || 0;
+        
+        let accomType = $('#accom_type').val();
+        let nights = parseInt($('#accom_nights').val()) || 0;
+        let multiplier = $('#is_special_area').is(':checked') ? 1.25 : 1;
+        let accomActualPerNight = parseFloat($('#accom_actual_price').val()) || 0; 
+        
+        let transportTotal = 0;
+        let otherTotal = 0;
+        let trpTypes = [];
+        
+        $('#transportBody tr').each(function() {
+            let type = $(this).find('.transport-type').val();
+            let amt = parseFloat($(this).find('.transport-amount').val()) || 0;
+            
+            let typeName = "";
+            if (type === 'car') typeName = "รถยนต์ส่วนบุคคล";
+            else if (type === 'motorcycle') typeName = "รถจักรยานยนต์";
+            else if (type === 'gov_car') typeName = "รถยนต์ราชการ";
+            else if (type === 'other') typeName = "รับจ้าง/ประจำทาง";
+
+            if (typeName && !trpTypes.includes(typeName)) {
+                trpTypes.push(typeName);
+            }
+            
+            if (type === 'other') {
+                otherTotal += amt;
+            } else {
+                transportTotal += amt;
+            }
+        });
+        
+        let trpTypeStr = trpTypes.length > 0 ? trpTypes.join(', ') : '-';
+        
+        let travelers = [];
+        travelers.push({
+            name: $('#traveler_name').val(),
+            pos: $('#traveler_position').val(),
+            level: $('#traveler_level').val(),
+            isMain: true
+        });
+        
+        $('#coTravelerBody tr').each(function() {
+            travelers.push({
+                name: $(this).find('.ct-name').val(),
+                pos: $(this).find('.ct-pos').val(),
+                level: $(this).find('.ct-level').val(),
+                isMain: false
+            });
+        });
+
+        let sumAlw = 0, sumAcc = 0;
+        let totalActualAcc = accomActualPerNight * nights; 
+        let actualAccPerPerson = travelers.length > 0 ? (totalActualAcc / travelers.length) : 0; 
+
+        travelers.forEach(t => {
+            let rAlw = (t.level === 'senior') ? 270 : 240;
+            let rAcc = (t.level === 'senior') ? 1200 : 800;
+            
+            t.alw = Math.max(0, (calcDays * rAlw) - (deductMeals * (rAlw / 3)));
+            
+            if (accomType === 'flat') {
+                t.acc = nights > 0 ? (nights * rAcc * multiplier) : 0; 
+            } else if (accomType === 'actual_single' || accomType === 'actual_twin') {
+                t.acc = actualAccPerPerson; 
+            } else {
+                t.acc = 0;
+            }
+            
+            t.trp = t.isMain ? transportTotal : 0;
+            t.oth = t.isMain ? otherTotal : 0;
+            t.total = t.alw + t.acc + t.trp + t.oth;
+            
+            sumAlw += t.alw;
+            sumAcc += t.acc;
+        });
+        
+        $('#total_per_diem_display').html(`${sumAlw.toFixed(2)} <small class="fs-6 text-muted">บาท</small>`);
+        $('#sum_per_diem_txt').text(sumAlw.toFixed(2));
+        $('#total_accom_display').html(`${sumAcc.toFixed(2)} <small class="fs-6 text-muted">บาท</small>`);
+        $('#sum_accom_txt').text(sumAcc.toFixed(2));
+        
+        $('#total_transport_display').text((transportTotal + otherTotal).toFixed(2));
+        $('#sum_transport_txt').text((transportTotal + otherTotal).toFixed(2));
+
+        let grandTotal = sumAlw + sumAcc + transportTotal + otherTotal;
+        $('#grand_total_display').html(`${grandTotal.toFixed(2)} <span class="fs-4 text-white">บาท</span>`);
+        $('#thai_baht_text_display').text(toThaiBahtText(grandTotal));
+
+        globalCalcData = {
+            travelers: travelers,
+            days: calcDays,
+            nights: nights,
+            hrs: finalHours,
+            mins: finalMins,
+            fullDays: finalDays,
+            totals: { alw: sumAlw, acc: sumAcc, trp: transportTotal, oth: otherTotal, grand: grandTotal, trpType: trpTypeStr }
+        };
+    }
+
+    // =========================================================================
+    // ฟังก์ชันสร้างและสั่งพิมพ์
+    // =========================================================================
+    function printDocument() {
+        calculateAll(); // อัปเดตข้อมูลล่าสุดก่อนพิมพ์
+        const d = globalCalcData;
+        const main = d.travelers[0];
+        const fmt = (num) => Number(num) > 0 ? Number(num).toLocaleString('en-US', {minimumFractionDigits:2}) : '-';
+        
+        // 1. ดึงข้อมูล
+        const today = new Date();
+        const docDay = today.getDate();
+        const docMonth = monthNames[today.getMonth() + 1];
+        const docYear = today.getFullYear() + 543;
+
+        const sDate = parseThaiDate($('#start_date').val());
+        const eDate = parseThaiDate($('#end_date').val());
+        const oDate = parseThaiDate($('#doc_order_date').val());
+        
+        // ตรวจสอบข้อมูล "ผ่าน" (เรียน ผู้บังคับบัญชา)
+        const passThrough = $('#pass_through').val().trim();
+        let commanderText = $('#commander_type').val();
+        
+        if (passThrough) {
+            if (passThrough === "ผู้อำนวยการสำนักงานส่งเสริมและพัฒนาการเกษตรที่ ๒ จังหวัดราชบุรี" || passThrough === "ผู้อำนวยการสำนักงานส่งเสริมและพัฒนาการเกษตรที่ 2 จังหวัดราชบุรี") {
+                commanderText += " ผ่าน " + passThrough;
+            } else {
+                commanderText += " " + passThrough;
+            }
+        }
+
+        // ================= หยอดข้อมูลลงหน้า 1 =================
+        $('#pr_office').text($('#traveler_school').val());
+        $('#pr_doc_d').text(docDay); $('#pr_doc_m').text(docMonth); $('#pr_doc_y').text(docYear);
+        
+        $('#pr_commander').html("&nbsp;" + commanderText); 
+        
+        $('#pr_order_no').text($('#doc_order_no').val());
+        $('#pr_order_date').text(oDate.d ? `${oDate.d} ${oDate.m} ${oDate.y}` : '');
+        
+        $('#pr_main_name').text(main.name);
+        $('#pr_main_pos').text(main.pos);
+        $('#pr_main_dept').text($('#traveler_school').val());
+
+        $('#pr_c1_n, #pr_c1_p, #pr_c2_n, #pr_c2_p, #pr_c3_n, #pr_c3_p, #pr_c4_n, #pr_c4_p').text('');
+        if(d.travelers[1]) { $('#pr_c1_n').text(d.travelers[1].name); $('#pr_c1_p').text(d.travelers[1].pos); }
+        if(d.travelers[2]) { $('#pr_c2_n').text(d.travelers[2].name); $('#pr_c2_p').text(d.travelers[2].pos); }
+        if(d.travelers[3]) { $('#pr_c3_n').text(d.travelers[3].name); $('#pr_c3_p').text(d.travelers[3].pos); }
+        if(d.travelers[4]) { $('#pr_c4_n').text(d.travelers[4].name); $('#pr_c4_p').text(d.travelers[4].pos); }
+
+        $('#pr_trip_purpose').text($('#trip_purpose').val());
+        $('#pr_trip_loc').text($('#trip_location').val());
+
+        $('#pr_s_d').text(sDate.d); $('#pr_s_m').text(sDate.m); $('#pr_s_y').text(sDate.y); $('#pr_s_t').text($('#start_time').val());
+        $('#pr_e_d').text(eDate.d); $('#pr_e_m').text(eDate.m); $('#pr_e_y').text(eDate.y); $('#pr_e_t').text($('#end_time').val());
+        $('#pr_t_d').text(d.fullDays); $('#pr_t_h').text(d.hrs); $('#pr_t_m').text(d.mins);
+
+        if(d.travelers.length > 1) {
+            $('#chk_for_me').text('◯'); $('#chk_for_group').text('◉');
+        } else {
+            $('#chk_for_me').text('◉'); $('#chk_for_group').text('◯');
+        }
+
+        $('#pr_alw_d').text(d.days); $('#pr_alw_tot').text(fmt(d.totals.alw));
+        $('#pr_acc_d').text(d.nights); $('#pr_acc_tot').text(fmt(d.totals.acc));
+        $('#pr_trp_type').text(d.totals.trpType);
+        $('#pr_trp_tot').text(fmt(d.totals.trp));
+        $('#pr_oth_tot').text(fmt(d.totals.oth));
+        $('#pr_grd_tot').text(fmt(d.totals.grand));
+        
+        $('#pr_baht_txt').text(toThaiBahtText(d.totals.grand));
+
+        // ================= หยอดข้อมูลลงหน้า 2 =================
+        $('#pr2_amt').text(fmt(d.totals.grand));
+        $('#pr2_baht').text(toThaiBahtText(d.totals.grand));
+
+        // ================= หยอดข้อมูลลงหน้า 3 (ตาราง) =================
+        if (d.travelers.length > 1) {
+            $('#page3_container').removeClass('d-none').show();
+            $('#pr3_office').text($('#traveler_school').val());
+            $('#pr3_province').text($('#traveler_province').val()); // ดึงข้อมูลจังหวัดที่กรอกมาใส่หน้า 3
+            $('#pr3_main').text(main.name);
+            
+            // ดึงข้อมูลวันที่จากหน้าที่ 1 มาใส่หน้า 3
+            $('#pr3_doc_d').text(docDay);
+            $('#pr3_doc_m').text(docMonth);
+            $('#pr3_doc_y').text(docYear);
+            
+            let tbodyHtml = '';
+            
+            for(let index = 0; index < 8; index++) {
+                let t = d.travelers[index];
+                if(t) {
+                    let remark = t.alw > 0 ? `เบี้ยเลี้ยง ${t.level === 'senior' ? '270' : '240'} บ./วัน` : '';
+                    tbodyHtml += `<tr>
+                        <td>${index + 1}</td>
+                        <td class="text-start ps-2">${t.name}</td>
+                        <td class="text-start ps-2">${t.pos}</td>
+                        <td class="text-end pe-1">${fmt(t.alw)}</td>
+                        <td class="text-end pe-1">${fmt(t.acc)}</td>
+                        <td class="text-end pe-1">${fmt(t.trp)}</td>
+                        <td class="text-end pe-1">${fmt(t.oth)}</td>
+                        <td class="text-end pe-1 fw-bold">${fmt(t.total)}</td>
+                        <td></td><td></td><td class="text-center" style="font-size: 8pt;">${remark}</td>
+                    </tr>`;
+                } else {
+                    tbodyHtml += `<tr>
+                        <td style="height: 30px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    </tr>`;
+                }
+            }
+            $('#pr3_tbody').html(tbodyHtml);
+            
+            $('#pr3_s_alw').text(fmt(d.totals.alw));
+            $('#pr3_s_acc').text(fmt(d.totals.acc));
+            $('#pr3_s_trp').text(fmt(d.totals.trp));
+            $('#pr3_s_oth').text(fmt(d.totals.oth));
+            $('#pr3_s_grd').text(fmt(d.totals.grand));
+            $('#pr3_baht').text(toThaiBahtText(d.totals.grand));
+        } else {
+            $('#page3_container').addClass('d-none').hide();
+        }
+
+        // ================= สั่งพิมพ์ (เบราว์เซอร์จะสลับโหมด @media print ให้เอง) =================
+        window.print();
+    }
+
+    $(document).ready(function() {
+        flatpickr(".date-picker", { 
+            dateFormat: "d/m/Y", locale: "th", defaultDate: "today",
+            onChange: function() { calculateAll(); }
+        });
+        flatpickr(".time-picker", { 
+            enableTime: true, noCalendar: true, dateFormat: "H:i", time_24hr: true,
+            onChange: function() { calculateAll(); }
+        });
+
+        let now = new Date();
+        let tmr = new Date(now); tmr.setDate(tmr.getDate() + 1);
+        let dd = String(tmr.getDate()).padStart(2, '0');
+        let mm = String(tmr.getMonth() + 1).padStart(2, '0'); 
+        let yyyy = tmr.getFullYear();
+        document.getElementById("end_date")._flatpickr.setDate(`${dd}/${mm}/${yyyy}`);
+
+        addTransportRow('car', 'เดินทางไป-กลับ โดยรถยนต์ส่วนบุคคล', 100);
+        
+        $(document).on('change', '#accom_type', function() {
+            let val = $(this).val();
+            if (val === 'actual_single' || val === 'actual_twin') {
+                $('#actual_rate_container').slideDown();
+            } else {
+                $('#actual_rate_container').slideUp();
+            }
+            calculateAll();
+        });
+
+        $(document).on('click', '#btn-add-cotraveler', function() { addCoTraveler(); });
+        $(document).on('click', '.btn-remove-cotraveler', function() { removeCoTraveler(this); });
+
+        $(document).on('click', '.btn-add-transport', function() {
+            let type = $(this).data('type');
+            let desc = type === 'car' ? 'ค่าพาหนะรถยนต์ (ชดเชยน้ำมัน 4 บาท/กม.)' : 
+                       type === 'motorcycle' ? 'ค่าพาหนะรถจักรยานยนต์ (ชดเชยน้ำมัน 2 บาท/กม.)' : 
+                       type === 'gov_car' ? 'เดินทางโดยรถยนต์ราชการ ทะเบียน ' : 'ค่าพาหนะอื่นๆ';
+            let dist = (type === 'gov_car' || type === 'other') ? 0 : 50;
+            addTransportRow(type, desc, dist);
+        });
+
+        $(document).on('click', '.btn-remove-transport', function() {
+            $(this).closest('tr').remove();
+            calculateAll();
+        });
+
+        $(document).on('input change', '.transport-type, .transport-dist', function() {
+            let row = $(this).closest('tr');
+            let type = row.find('.transport-type').val();
+            let dist = parseFloat(row.find('.transport-dist').val()) || 0;
+            
+            if (type === 'car') row.find('.transport-amount').val((dist * 4).toFixed(2));
+            else if (type === 'motorcycle') row.find('.transport-amount').val((dist * 2).toFixed(2));
+            else if (type === 'gov_car') row.find('.transport-amount').val('0.00');
+            
+            calculateAll();
+        });
+        
+        $(document).on('input change', 'input, select', function() {
+            calculateAll();
+        });
+
+        // เปลี่ยนเป้าหมายปุ่ม Print มาเรียกใช้ฟังก์ชันใหม่
+        $(document).on('click', '#btn_print_pdf', function() { printDocument(); });
+        
+        setTimeout(calculateAll, 200);
+    });
+    </script>
+</body>
+</html>
